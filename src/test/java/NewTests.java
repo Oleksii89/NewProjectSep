@@ -1,15 +1,19 @@
+import api.TestOrderFunctions;
 import com.google.gson.Gson;
 import dto.Order;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import static io.restassured.RestAssured.given;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.restassured.RestAssured.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 
 
@@ -35,6 +39,39 @@ public class NewTests {
         Assertions.assertNotEquals("", Password);
         Assertions.assertNotEquals("", Role);
     }
+
+    @BeforeAll
+    static void setup() {
+
+
+    Response response = given().
+            header("Content-type", "application/json").
+            body("{\n" +
+                " \"username\": \"user4\", \n" +
+                " \"password\": \"hellouser4\"\n" +
+                "}").
+            when().
+            post("http://51.250.6.164:8080/login/student").
+            then().
+            statusCode(200).extract().response();
+
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-type", "application/json");
+    headers.put("Authorization", "Bearer" + response.body().asString());
+
+    Response responseOrders = given().
+            headers(headers).
+            when().
+            get("http://51.250.6.164:8080/orders").
+            then().
+            statusCode(200).extract().response();
+
+        System.out.println(responseOrders.body().asString());
+
+    }
+
+
+
     @Test
     public void getTest () {
         when().
@@ -59,8 +96,14 @@ public class NewTests {
         requestOrder.setCustomerPhone("5564879");
         requestOrder.setComment("Hey guys");
 
-        Gson gson = new Gson();
-        String stringRequestOrder = gson.toJson(requestOrder);
+        TestOrderFunctions testOrderFunctions = new TestOrderFunctions();
+
+        Order responseOrder = testOrderFunctions.postNewOrder(requestOrder);
+
+        System.out.println(requestOrder.toString());
+
+//        Gson gson = new Gson();
+//        String stringRequestOrder = gson.toJson(requestOrder);
 
 //        given().
 //        header ("Content-type", "application/json").
@@ -75,23 +118,23 @@ public class NewTests {
 //                "customerPhone", equalTo("5564879"),
 //                "comment", equalTo("Hey guys"));
 
-        Response response = given().
-                header("Content-type", "application/json").
-                body(stringRequestOrder).
-                when().
-                post(urlSwagger+"/test-orders").
-                then().
-                statusCode(200).extract().response();
-
-        Order responseOrder = gson.fromJson(response.body().asString(), Order.class);
-
-        Assertions.assertEquals(responseOrder.getStatus(), "OPEN", "status error");
-        Assertions.assertEquals(responseOrder.getCustomerName(), "Samuel", "incorrect name");
-        Assertions.assertEquals(responseOrder.getCourierId(),432, "incorrect courier ID");
-        Assertions.assertEquals(responseOrder.getCustomerPhone(),"5564879", "incorrect customer phone");
-        Assertions.assertEquals(responseOrder.getComment(), "Hey guys", "incorrect comment");
-
-        System.out.println(responseOrder.toString());
+//        Response response = given().
+//                header("Content-type", "application/json").
+//                body(stringRequestOrder).
+//                when().
+//                post(urlSwagger+"/test-orders").
+//                then().
+//                statusCode(200).extract().response();
+//
+//        Order responseOrder = gson.fromJson(response.body().asString(), Order.class);
+//
+//        Assertions.assertEquals(responseOrder.getStatus(), "OPEN", "status error");
+//        Assertions.assertEquals(responseOrder.getCustomerName(), "Samuel", "incorrect name");
+//        Assertions.assertEquals(responseOrder.getCourierId(),432, "incorrect courier ID");
+//        Assertions.assertEquals(responseOrder.getCustomerPhone(),"5564879", "incorrect customer phone");
+//        Assertions.assertEquals(responseOrder.getComment(), "Hey guys", "incorrect comment");
+//
+//        System.out.println(responseOrder.toString());
 
 
 
