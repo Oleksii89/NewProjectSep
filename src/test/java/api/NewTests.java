@@ -1,3 +1,5 @@
+package api;
+
 import api.TestOrderFunctions;
 import com.google.gson.Gson;
 import dto.Order;
@@ -19,19 +21,19 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class NewTests {
     private String urlSwagger = "http://51.250.6.164:8080";
-    @Test
-    public void catVoiceTest() {
-        Cat Zombik = new Cat();
-
-        assertEquals("Meow-Meow", Zombik.voiceCat, "Cat doesn't say anything");
-    }
-
-    @Test
-    public void dogVoiceTest() {
-        Dog Betty = new Dog();
-
-        assertEquals("Gav-Gav", Betty.voiceDog, "Dog is silent");
-    }
+//    @Test
+//    public void catVoiceTest() {
+//        Cat Zombik = new Cat();
+//
+//        Assertions.assertEquals("Meow-Meow", Zombik.voiceCat, "Cat doesn't say anything");
+//    }
+//
+//    @Test
+//    public void dogVoiceTest() {
+//        Dog Betty = new Dog();
+//
+//        Assertions.assertEquals("Gav-Gav", Betty.voiceDog, "Dog is silent");
+//    }
     @ParameterizedTest
     @CsvFileSource(resources = "/data.csv", useHeadersInDisplayName = true)
     void testWithFileSourceAndHeaders(String Login, String Password, String Role) {
