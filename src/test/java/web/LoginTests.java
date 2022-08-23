@@ -38,17 +38,5 @@ public class LoginTests {
 
     }
 
-    @Test
-    public void createOrderTest() {
-        LoginPage loginPage = open("http://51.250.6.164:3000/signin", LoginPage.class);
-        loginPage.inputLogin("user4");
-        loginPage.inputPassword("hellouser4");
-        CreateOrderPage createOrderPage = loginPage.clickSignInButton();
-        createOrderPage.inputNameField("Oleksii");
-        createOrderPage.inputPhoneField("1235431243");
-        createOrderPage.inputCommentField("create order");
-        createOrderPage.clickCreateOrderButton();
 
-
-    }
 }

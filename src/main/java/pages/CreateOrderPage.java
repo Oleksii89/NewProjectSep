@@ -17,6 +17,19 @@ public class CreateOrderPage {
     @FindBy(how = How.XPATH, using = "//*[@data-name = 'createOrder-button']")
     private SelenideElement createOrderButton;
 
+    @FindBy(how = How.XPATH, using = "//*[@data-name = 'orderSuccessfullyCreated-popup']/span")
+    private SelenideElement orderId;
+
+    @FindBy(how = How.XPATH, using = "//*[@data-name = 'orderSuccessfullyCreated-popup-ok-button']")
+    private SelenideElement orderSuccessfullyCreatedButton;
+
+    @FindBy(how = How.XPATH, using = "//*[@data-name = 'openStatusPopup-button']")
+    private SelenideElement statusButton;
+    @FindBy(how = How.NAME, using = "id")
+    private SelenideElement searchOrderInput;
+
+    @FindBy(how = How.XPATH, using = "//*[@data-name = 'searchOrder-submitButton']")
+    private SelenideElement searchOrderSubmitButton;
 
 
 
@@ -30,8 +43,31 @@ public class CreateOrderPage {
     public void inputCommentField(String comment) {
         commentField.setValue(comment);
     }
-    public OrderSuccessfullyCreatedPage clickCreateOrderButton() {
+    public void clickCreateOrderButton() {
         createOrderButton.click();
-        return Selenide.page(OrderSuccessfullyCreatedPage.class);
-            }
+     }
+    public void clickStatusButton() {
+        statusButton.click();
+      }
+    public void inputSearchOrderField(String orderId) {
+
+        searchOrderInput.setValue(orderId);
+    }
+     public void clickOrderSuccessfullyCreatedButton() {
+        orderSuccessfullyCreatedButton.click();
+     }
+
+     public OrderPage clickSearchOrderSubmitButton() {
+        searchOrderSubmitButton.click();
+        return Selenide.page(OrderPage.class);
+     }
+
+    public String getOrderId() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return orderId.getText().replaceAll("\\D+","");
+    }
 }
