@@ -9,7 +9,7 @@ import org.openqa.selenium.By;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
-public class LoginTests {
+public class LoginTests extends BaseWebTests {
 
 //    @Test
 //    public void userAuthError() {
@@ -29,7 +29,7 @@ public class LoginTests {
 
     @Test
     public void loginAndCheck() {
-        LoginPage loginPage = open("http://51.250.6.164:3000/signin", LoginPage.class);
+        LoginPage loginPage = open("/signin", LoginPage.class);
         loginPage.inputLogin("user4");
         loginPage.inputPassword("hellouser4");
         CreateOrderPage createOrderPage = loginPage.clickSignInButton();

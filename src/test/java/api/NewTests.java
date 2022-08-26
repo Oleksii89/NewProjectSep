@@ -1,93 +1,29 @@
 package api;
 
-import api.TestOrderFunctions;
-import com.google.gson.Gson;
 import dto.Order;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.Matchers.equalTo;
-
 
 public class NewTests {
-    private String urlSwagger = "http://51.250.6.164:8080";
-//    @Test
-//    public void catVoiceTest() {
-//        Cat Zombik = new Cat();
-//
-//        Assertions.assertEquals("Meow-Meow", Zombik.voiceCat, "Cat doesn't say anything");
-//    }
-//
-//    @Test
-//    public void dogVoiceTest() {
-//        Dog Betty = new Dog();
-//
-//        Assertions.assertEquals("Gav-Gav", Betty.voiceDog, "Dog is silent");
-//    }
-    @ParameterizedTest
-    @CsvFileSource(resources = "/data.csv", useHeadersInDisplayName = true)
-    void testWithFileSourceAndHeaders(String Login, String Password, String Role) {
-        Assertions.assertNotNull(Login);
-        Assertions.assertNotEquals("", Password);
-        Assertions.assertNotEquals("", Role);
-    }
+    private static String token = null;
+    private static Map<String, String> headers = new HashMap<>();
+
 
     @BeforeAll
     static void setup() {
+        LoginFunctions loginFunctions = new LoginFunctions();
+        token = loginFunctions.loginAsStudent("user1", "user4");
 
-
-    Response response = given().
-            header("Content-type", "application/json").
-            body("{\n" +
-                " \"username\": \"user4\", \n" +
-                " \"password\": \"hellouser4\"\n" +
-                "}").
-            when().
-            post("http://51.250.6.164:8080/login/student").
-            then().
-            statusCode(200).extract().response();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-type", "application/json");
-    headers.put("Authorization", "Bearer" + response.body().asString());
-
-    Response responseOrders = given().
-            headers(headers).
-            when().
-            get("http://51.250.6.164:8080/orders").
-            then().
-            statusCode(200).extract().response();
-
-        System.out.println(responseOrders.body().asString());
+        headers.put("Authorization", token);
+        headers.put("Content-type", "application/json");
 
     }
 
 
-
-    @Test
-    public void getTest () {
-        when().
-                get (urlSwagger+"/test-orders/{id}",8).
-        then().
-                statusCode(200).
-                body("status", equalTo("OPEN"),
-                        "courierId", equalTo(null),
-                       // "customerName", equalTo("Samuel"),
-                       // "customerPhone", equalTo("+37255544422"),
-                       // "comment", equalTo("hello ZZWfI"),
-                        "id",equalTo(8));
-
-    }
     @Test
     public void postOrder(){
         Order requestOrder = new Order();
@@ -98,9 +34,9 @@ public class NewTests {
         requestOrder.setCustomerPhone("5564879");
         requestOrder.setComment("Hey guys");
 
-        TestOrderFunctions testOrderFunctions = new TestOrderFunctions();
+        OrderFunctions testOrderFunctions = new OrderFunctions();
 
-        Order responseOrder = testOrderFunctions.postNewOrder(requestOrder);
+        Order responseOrder = testOrderFunctions.postNewOrder(requestOrder, headers);
 
         System.out.println(requestOrder.toString());
 
@@ -138,9 +74,33 @@ public class NewTests {
 //
 //        System.out.println(responseOrder.toString());
 
-
+//
+//
+//
+//
+//    Response responseOrders = given().
+//            headers(headers).
+//            when().
+//            get("http://51.250.6.164:8080/orders").
+//            then().
+//            statusCode(200).extract().response();
+//
+//        System.out.println(responseOrders.body().asString());
 
 
     }
+    //    @Test
+//    public void catVoiceTest() {
+//        Cat Zombik = new Cat();
+//
+//        Assertions.assertEquals("Meow-Meow", Zombik.voiceCat, "Cat doesn't say anything");
+//    }
+//
+//    @Test
+//    public void dogVoiceTest() {
+//        Dog Betty = new Dog();
+//
+//        Assertions.assertEquals("Gav-Gav", Betty.voiceDog, "Dog is silent");
+//    }
 
 }

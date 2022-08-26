@@ -4,7 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
-public class OrderPage {
+public class OrderPage extends BasePage {
 
 
     @FindBy(how = How.XPATH, using = "//*[@data-name = 'order-item-0']/span")
