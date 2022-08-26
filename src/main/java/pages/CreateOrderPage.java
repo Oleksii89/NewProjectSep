@@ -5,7 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
-public class CreateOrderPage {
+public class CreateOrderPage extends BasePage {
     @FindBy(how = How.ID, using = "name")
     private SelenideElement nameField;
 

@@ -5,7 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
-public class LoginPage {
+public class LoginPage extends BasePage {
 
     @FindBy(how = How.ID, using = "username")
     private SelenideElement loginField;

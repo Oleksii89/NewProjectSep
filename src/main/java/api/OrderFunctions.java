@@ -7,14 +7,15 @@ import io.restassured.response.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
+
 import static io.restassured.RestAssured.given;
 
-public class TestOrderFunctions {
-
+public class OrderFunctions {
     private String baseUrl;
 
-    public TestOrderFunctions() {
+    public OrderFunctions() {
         try(InputStream input = new FileInputStream("src/main/resources/settings.properties")) {
             Properties prop = new Properties();
 
@@ -27,34 +28,39 @@ public class TestOrderFunctions {
             ex.printStackTrace();
         }
     }
-    public Order postNewOrder (Order body) {
+    public Order postNewOrder (Order body, Map<String,String> headers) {
+
         Gson gson = new Gson();
         String stringRequestOrder = gson.toJson(body);
 
+
         Response response = given().
-                headers("Content-type", "application/json").
+                headers(headers).
                 body(stringRequestOrder).
                 when().
-                post(baseUrl+"/test-orders").
+                post(baseUrl+"/orders").
                 then().
                 statusCode(200).extract().response();
 
         return gson.fromJson(response.body().asString(), Order.class);
 
     }
-    public String postNewOrder (Order body, Integer statusCode) {
+    public String postNewOrder  (Order body, Integer statusCode, Map<String,String> headers) {
         Gson gson = new Gson();
         String stringRequestOrder = gson.toJson(body);
 
         Response response = given().
-                headers("Content-type", "application/json").
+                headers(headers).
                 body(stringRequestOrder).
                 when().
-                post(baseUrl+"/test-orders").
+                post(baseUrl+"/orders").
                 then().
                 statusCode(statusCode).extract().response();
 
         return response.body().asString();
 
     }
+
+
+
 }
