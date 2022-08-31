@@ -61,6 +61,57 @@ public class OrderFunctions {
 
     }
 
+    public Order putOrderToAssign(Integer orderId, Map<String,String> headers) {
+        Gson gson = new Gson();
 
+
+        Response response = given().
+                headers(headers).
+                pathParam("id", orderId).
+                when().
+                put(baseUrl+"/orders/{id}/assign").
+                then().
+                statusCode(200).extract().response();
+
+        return gson.fromJson(response.body().asString(), Order.class);
+
+    }
+    public Order putOrderToInprogress(Integer orderId, Map<String, String> headers) {
+
+        Gson gson = new Gson();
+        String stringRequestStatus = "{\n" +
+                " \"status\": \"INPROGRESS\"\n" +
+                "}";
+
+        Response response = given().
+                headers(headers).
+                pathParam("id", orderId).
+                body(stringRequestStatus).
+                when().
+                put(baseUrl + "/orders/{id}/status").
+                then().
+                statusCode(200).extract().response();
+
+        return gson.fromJson(response.body().asString(), Order.class);
+    }
+    public Order putOrderToDelivered(Integer orderId, Map<String, String> headers) {
+
+        Gson gson = new Gson();
+        String stringRequestStatus = "{\n" +
+                " \"status\": \"DELIVERED\"\n" +
+                "}";
+
+        Response response = given().
+                headers(headers).
+                pathParam("id", orderId).
+                body(stringRequestStatus).
+                when().
+                put(baseUrl + "/orders/{id}/status").
+                then().
+                statusCode(200).extract().response();
+
+        return gson.fromJson(response.body().asString(), Order.class);
+
+    }
 
 }

@@ -3,10 +3,13 @@ package web;
 import api.CourierFunctions;
 import api.LoginFunctions;
 import api.OrderFunctions;
+import com.codeborne.selenide.Selenide;
 import dto.Courier;
 import dto.Order;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import pages.CreateOrderPage;
 import pages.LoginPage;
 import pages.OrderPage;
@@ -14,6 +17,8 @@ import pages.OrderPage;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 public class OrdersTests extends BaseWebTests {
@@ -100,73 +105,57 @@ public class OrdersTests extends BaseWebTests {
         headers.put ("Authorization", token);
         headers.put ("Content-type", "application/json");
 
-        Order requestOrder = new Order();
 
-        requestOrder.setStatus("OPEN");
-        requestOrder.setCustomerName("Samuel Test2");
-        requestOrder.setCourierId(123L);
-        requestOrder.setCustomerPhone("111122223333");
-        requestOrder.setComment("Hey guys2");
-
-        OrderFunctions testOrderFunctions = new OrderFunctions();
-
-        Order responseOrder = testOrderFunctions.postNewOrder(requestOrder, headers);
-
-        // после логина студентом и создания заказа отправить запрос на создаение курьера
+        // после логина студентом создаем курьера
 
         Courier requestCourier = new Courier();
-
-        requestCourier.setLogin("newcourier1");
-        requestCourier.setPassword("newcourier1");
-        requestCourier.setName("newcourier1");
+        requestCourier.setLogin(RandomStringUtils.randomAlphabetic(6));
+        requestCourier.setName("newcourier4");
+        requestCourier.setPassword("newcourier4");
 
         CourierFunctions courierFunctions = new CourierFunctions();
-
         Courier responseCourier = courierFunctions.postNewCourier(requestCourier,headers);
 
-        Assertions.assertEquals(responseCourier.getLogin(), "newcourier1", "error message");
+        // логин Курьером
+        token = loginFunctions.loginAsCourier(responseCourier.getLogin(), requestCourier.getPassword());
+
+        headers.replace("Authorization", token);
 
 
+          //UI
+        LoginPage loginPage = open("/signin", LoginPage.class);
+        loginPage.inputLogin("user4");
+        loginPage.inputPassword("hellouser4");
+        CreateOrderPage createOrderPage = loginPage.clickSignInButton();
+        createOrderPage.inputNameField("Oleksii");
+        createOrderPage.inputPhoneField("1235431243");
+        createOrderPage.inputCommentField("create order");
+        createOrderPage.clickCreateOrderButton();
+        String orderId = createOrderPage.getOrderId();
+        createOrderPage.clickOrderSuccessfullyCreatedButton();
+        createOrderPage.clickStatusButton();
+        createOrderPage.inputSearchOrderField(orderId);
+        OrderPage orderPage = createOrderPage.clickSearchOrderSubmitButton();
 
+        //API
+        OrderFunctions orderFunctions = new OrderFunctions();
+        orderFunctions.putOrderToAssign(Integer.valueOf(orderId), headers);
 
+        // проверка статусов заказа UI
+        Selenide.refresh(); // обновление страницы UI
+        $(By.xpath("//*[@data-name = 'status-item-1']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
 
+        orderFunctions.putOrderToInprogress(Integer.valueOf(orderId), headers); // меняем статус заказа
 
+        Selenide.refresh(); // обновление страницы UI
+        $(By.xpath("//*[@data-name = 'status-item-2']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
 
-//        //UI
-//        LoginPage loginPage = open("/signin", LoginPage.class);
-//        loginPage.inputLogin("user4");
-//        loginPage.inputPassword("hellouser4");
-//        CreateOrderPage createOrderPage = loginPage.clickSignInButton();
-//        createOrderPage.inputNameField("Oleksii");
-//        createOrderPage.inputPhoneField("1235431243");
-//        createOrderPage.inputCommentField("create order");
-//        createOrderPage.clickCreateOrderButton();
-//        createOrderPage.clickOrderSuccessfullyCreatedButton();
-//        createOrderPage.clickStatusButton();
-//        createOrderPage.inputSearchOrderField(responseOrder.getId().toString());
-//        OrderPage orderPage = createOrderPage.clickSearchOrderSubmitButton();
-//
-//        // проверка статусов заказа UI
-//        $(By.xpath("//*[@data-name = 'status-item-0']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
-//        //  Selenide.refresh(); // обновление страницы UI
-//        $(By.xpath("//*[@data-name = 'status-item-1']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
-//        //  Selenide.refresh(); // обновление страницы UI
-//        $(By.xpath("//*[@data-name = 'status-item-2']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
-//        //  Selenide.refresh(); // обновление страницы UI
-//        $(By.xpath("//*[@data-name = 'status-item-3']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
+        orderFunctions.putOrderToDelivered(Integer.valueOf(orderId), headers); // меняем статус заказа
 
-    }
-
-    @Test
-    public void LoginAsCourierTest() {
-        LoginFunctions loginFunctions = new LoginFunctions();
-        String token = loginFunctions.loginAsCourier("newcourier1","newcourier1"); // login as courier
-
-        Map<String, String> headers = new HashMap<>();
-
-        headers.put ("Authorization", token);
-        headers.put ("Content-type", "application/json");
-
+        Selenide.refresh(); // обновление страницы UI
+        $(By.xpath("//*[@data-name = 'status-item-3']/div/span")).shouldHave(attribute("class","status-list__status status-list__status_active"));
 
     }
+
+
 }

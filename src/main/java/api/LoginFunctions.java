@@ -1,7 +1,6 @@
 package api;
 
 import com.google.gson.Gson;
-import dto.Courier;
 import dto.Login;
 import io.restassured.response.Response;
 
@@ -49,17 +48,17 @@ public class LoginFunctions {
         return "Bearer " + response.body().asString();
 
     }
-    public String loginAsCourier(String name, String password) {
-        Courier courier = new Courier();
-        courier.setName(name);
-        courier.setPassword(password);
+    public String loginAsCourier(String username, String password) {
+        Login login = new Login();
+        login.setUsername(username);
+        login.setPassword(password);
 
         Gson gson = new Gson();
-        String stringRequestCourier = gson.toJson(courier);
+        String stringRequestLogin = gson.toJson(login);
 
         Response response = given().
                 headers("Content-type", "application/json").
-                body(stringRequestCourier).
+                body(stringRequestLogin).
                 when().
                 post(baseUrl + "/login/courier").
                 then().
